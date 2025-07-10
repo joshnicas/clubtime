@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard</title>
+</head>
+<style>
+     :root {
+        --white: #FFFFFF;
+        --pale-white: #f6f6f6;
+        --sidebar-primary-hover: #EBEFFD;
+        --sidebar-bg: #fff;
+        --bg: #dbdbdb;
+        --text: #808183;
+        --text-headline: #1f1f1f;
+        --text-link: #f9fafc;
+        --expand-button: #f6f6f6;
+        --search-bg: #f6f6f6;
+        --separator: #1e1f21;
+        --link-text: #454545;
+        --link-hover: #f6f6f6;
+        --toolkit-bg: #151515;
+        --toolkit-text: #f6f6f6;
+        --alarm: #ee461e;
+        --green: #aeeadb;
+        --green-dark: #a3d6c7;
+        --violet: #cad2f6;
+        --violet-dark: #c2c7e1;
+        --purple: #e4c5f4;
+        --purple-dark: #d5bddd;
+        --text-dark: #151515;
+        --text-gray: #929292;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        padding: 1rem;
+        height: 100%;
+        background: var(--bg);
+    }
+    
+    html {
+        height: 100%;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .sidebar {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        min-height: 55rem;
+        height: 100%;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        max-width: 18rem;
+        min-width: 4rem;
+        display: flex;
+        color: var(--white);
+        flex-direction: column;
+        background-color: var(--sidebar-bg);
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        transition: max-width 0.2s ease-in-out;
+    }
+    
+    body.collapsed .sidebar {
+        max-width: 5rem;
+        display: flex;
+    }
+    
+    body.collapsed .main {
+        margin-left: 7rem;
+        display: flex;
+    }
+    
+    body.collapsed .hide {
+        position: absolute;
+        visibility: hidden;
+    }
+    
+    .separator {
+        width: 100%;
+        height: 0.25px;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    }
+    
+    .separator--top {
+        margin-top: auto;
+    }
+    
+    .search__wrapper {
+        position: relative;
+        margin-top: 1.25rem;
+    }
+    
+    .search__wrapper input {
+        background: var(--search-bg);
+        min-height: 2.6rem;
+        width: 100%;
+        color: var(--text);
+        border-radius: 0.75rem;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0) 0px 0px 1px 0px;
+        padding-left: 2.15rem;
+        font-size: 1.1rem;
+        border: none;
+    }
+    
+    .search__wrapper {
+        background: transparent;
+    }
+    
+    .search__wrapper input::placeholder {
+        color: var(--text);
+        font-size: 1.1rem;
+    }
+    
+    body.collapsed .search__wrapper input {
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    body.collapsed .search__wrapper input::placeholder {
+        color: transparent;
+    }
+    
+    .search__wrapper input:focus {
+        outline: 1px solid var(--text-gray);
+    }
+    
+    .search__wrapper svg {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 0.9rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        stroke: var(--text);
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+    
+    .sidebar-top-wrapper {
+        display: flex;
+    }
+    
+    .sidebar-top {
+        position: relative;
+        display: flex;
+        align-items: start;
+        justify-content: center;
+        flex-direction: column;
+        overflow: hidden;
+        height: 4rem;
+        padding-bottom: 1rem;
+    }
+    
+    .sidebar-top__company {
+        display: flex;
+        gap: 0.25rem;
+        flex-direction: column;
+    }
+    
+    .company-name {
+        font-size: 1.25rem;
+        color: var(--text-headline);
+    }
+    
+    .company-members {
+        font-size: 1rem;
+        color: var(--text);
+        font-weight: 600;
+    }
+    
+    .logo__wrapper {
+        display: flex;
+        align-items: center;
+        color: var(--text);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.85rem;
+        gap: 0.75rem;
+    }
+    
+    .logo-small {
+        width: 3rem;
+        aspect-ratio: 1/1;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        object-fit: cover;
+    }
+    
+    .company-name {
+        white-space: nowrap;
+        color: var(--text-headline);
+    }
+    
+    .sidebar-links--top {
+        margin-top: 1.5rem;
+    }
+    
+    .sidebar-links ul {
+        list-style-type: none;
+        position: relative;
+        display: flex;
+        row-gap: 0.5rem;
+        flex-direction: column;
+    }
+    
+    .sidebar-links li {
+        color: var(--text-dark);
+        min-width: 3rem;
+    }
+    
+    .sidebar-links li .notification {
+        background: var(--alarm);
+    }
+    
+    .sidebar-links svg {
+        stroke: var(--text-dark);
+        width: 1.5rem;
+        height: 1.5rem;
+        min-width: 1.75rem;
+    }
+    
+    .sidebar-links li a:hover {
+        background: var(--link-hover);
+    }
+    
+    .sidebar-links li a {
+        color: var(--text-dark);
+        width: 100%;
+        padding-left: 0.6rem;
+        font-size: 1.1rem;
+        display: flex;
+        gap: 1rem;
+        border-radius: 0.75rem;
+        justify-content: start;
+        align-items: center;
+        min-height: 3rem;
+        text-decoration: none;
+        transition: background 0.2s ease-in-out;
+    }
+    
+    .sidebar-links li a:focus {
+        outline: 1px solid var(--text-dark);
+    }
+    
+    .sidebar-links li a .link {
+        overflow: hidden;
+        white-space: nowrap;
+        animation: fadeIn 0.2s ease-in-out;
+    }
+    
+    .sidebar-links .notification {
+        position: absolute;
+        top: 0.5rem;
+        left: 1.5rem;
+        width: 0.6rem;
+        height: 0.6rem;
+        background: var(--alarm);
+        border-radius: 50%;
+    }
+    
+    .sidebar-links .active:hover {
+        background: var(--link-hover);
+    }
+    
+    .sidebar-links .active {
+        text-decoration: none;
+        background: var(--link-hover);
+        color: var(--text-dark);
+    }
+    
+    .sidebar-links .active svg {
+        stroke: var(--text-dark);
+    }
+    
+    .sidebar-links--bottom {
+        margin-top: auto;
+    }
+    
+    .toolkit {
+        position: relative;
+    }
+    
+    .toolkit .toolkit__content::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        left: 0%;
+        margin-left: -9px;
+        margin-top: -5px;
+        border-style: solid;
+        border-color: transparent var(--toolkit-bg) transparent transparent;
+    }
+    
+    .toolkit .toolkit__content {
+        visibility: hidden;
+        background: var(--text-dark);
+        color: var(--text-link);
+        text-align: center;
+        border-radius: 6px;
+        white-space: nowrap;
+        padding: 0.35rem 0.75rem;
+        position: absolute;
+        z-index: 1;
+        left: 4.5rem;
+    }
+    
+    .collapsed .toolkit:hover .toolkit__content {
+        visibility: visible;
+    }
+    
+    .collapsed .toolkit:focus .toolkit__content {
+        visibility: visible;
+    }
+    
+    .sidebar__profile {
+        display: flex;
+        align-items: center;
+        padding-top: 0.5rem;
+        gap: 0.75rem;
+        flex-direction: row;
+        color: var(--text-link);
+    }
+    
+    .avatar__wrapper {
+        position: relative;
+        display: flex;
+    }
+    
+    .avatar {
+        display: block;
+        width: 2.6rem;
+        height: 2.6rem;
+        object-fit: cover;
+        cursor: pointer;
+        margin: 0 0.15rem;
+        margin-bottom: 0.25rem;
+        border-radius: 0.5rem;
+        transition: outline-offset 0.2s ease;
+    }
+    
+    .avatar__wrapper .online__status {
+        position: absolute;
+        top: 0.1rem;
+        left: 0.1rem;
+        height: 0.75rem;
+        width: 0.75rem;
+        background: var(--online);
+        border-radius: 50%;
+    }
+    
+    .avatar:hover {
+        outline: 2px solid var(--text-gray);
+        outline-offset: 3px;
+    }
+    
+    .avatar__name {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        white-space: nowrap;
+    }
+    
+    .user-name {
+        font-weight: 600;
+        text-align: left;
+        color: var(--text-dark);
+    }
+    
+    .email {
+        color: var(--text-gray);
+        font-size: 0.8rem;
+    }
+    
+    .profile-menu-button {
+        margin-left: auto;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .profile-menu-button svg {
+        color: var(--text-gray);
+    }
+    
+    .expand-btn {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        background: var(--expand-button);
+        z-index: 2;
+        right: -1rem;
+        width: 2.2rem;
+        height: 2.2rem;
+        border: none;
+        border-radius: 50%;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+    
+    .expand-btn svg {
+        transform: rotate(-180deg);
+        stroke: var(--text-dark);
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    body.collapsed .expand-btn svg {
+        transform: rotate(-360deg);
+    }
+    
+    .routes .route__marker {
+        min-width: 1.25rem;
+        min-height: 1.25rem;
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+        display: inline-block;
+        border-radius: 0.25rem;
+    }
+    
+    .routes .route__marker--green {
+        background: var(--green);
+        border: 2px solid var(--green-dark);
+    }
+    
+    .routes .route__marker--violet {
+        background: var(--violet);
+        border: 2px solid var(--violet-dark);
+    }
+    
+    .routes .route__marker--purple {
+        background: var(--purple);
+        border: 2px solid var(--purple-dark);
+    }
+    
+    .main {
+        background: var(--white);
+        margin-left: 20rem;
+        padding: 4rem;
+        border-radius: 0.75rem;
+        width: 100%;
+        transition: margin-left 0.2s ease-in-out;
+    }
+    
+    .user_profile {
+        display: flex;
+        align-items: center;
+        padding-top: 0.5rem;
+        gap: 0.75rem;
+        flex-direction: row;
+        color: var(--text-link);
+    }
+    
+    .user_acc-name {
+        font-weight: 600;
+        text-align: left;
+        color: var(--text-dark);
+    }
+    
+    .user_username {
+        color: var(--text-gray);
+        font-size: 0.8rem;
+    }
+    
+    .user_avatar {
+        position: relative;
+        display: flex;
+    }
+    
+    .user_details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .post-pic {
+        height: 30rem;
+        width: 30rem;
+        aspect-ratio: 1/1;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        object-fit: cover;
+    }
+    
+    .pic-content {
+        border-radius: 0.5rem;
+        background: rgb(167, 167, 167);
+        margin-top: 1rem;
+    }
+    
+    .main-div {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    .trending-div {
+        background: var(--white);
+        padding: 4rem;
+        border-radius: 0.75rem;
+        width: 100%;
+        transition: margin-left 0.2s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .trending-heading {
+        text-align: center;
+        font-size: larger;
+    }
+    
+    .trending-contents {
+        background: var(--pale-white);
+        border-radius: 1rem;
+        padding: 0.75rem;
+    }
+    
+    .trending-contents .heading {
+        display: flex;
+    }
+    
+    .trending-contents .heading .head {
+        font-weight: 600;
+    }
+    
+    .trending-contents .heading .name {
+        color: var(--text-gray);
+    }
+    
+    .trending-contents .contents {
+        color: rgb(48, 48, 48);
+    }
+    
+    @keyframes fadeIn {
+        from {
+            width: 4rem;
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+            width: 100%;
+        }
+    }
+</style>
+
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-top-wrapper">
+            <div class="sidebar-top">
+                <a href="#" class="logo__wrapper">
+                    <img src="asset/Screenshot (1).png" alt="logo" class="logo-small">
+                    <div class="hidesidebar-top_company hide">
+                        <span class="company-name">
+                            Market Site
+                        </span>
+                        <span class="company-members">
+                            6.8kmembers
+                        </span>
+                    </div>
+                </a>
+            </div>
+            <button class="expand-btn" type="button">
+                <!--expand button-->
+            </button>
+        </div>
+        <div class="search__wrapper">
+            <input type="text" placeholder="Search.." aria-labelledby="search-icon">
+        </div>
+        <div class="sidebar-links sidebar-links--top">
+            <ul>
+                <li>
+                    <a href="#dashboard" class="toolkit">
+                        <span class="route__marker route__marker--purple"></span>
+                        <span class="link hide">Dashboard</span>
+                        <span class="toolkit__content">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div class="sidebar-links routes sidebar-links--gray">
+            <ul>
+                <li>
+                    <a href="feeds.html" class="toolkit">
+                        <span class="route__marker route__marker--green"></span>
+                        <span class="link hide">Home</span>
+                        <span class="toolkit__content">Home</span>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div class="sidebar-links routes sidebar-links--gray">
+            <ul>
+                <li>
+                    <a href="#home" class="toolkit">
+                        <span class="route__marker route__marker--purple"></span>
+                        <span class="link hide">Communities</span>
+                        <span class="toolkit__content">Communities</span>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div class="sidebar-links routes sidebar-links--gray">
+            <ul>
+                <li>
+                    <a href="#home" class="toolkit">
+                        <span class="route__marker route__marker--violet"></span>
+                        <span class="link hide">Home</span>
+                        <span class="toolkit__content">Home</span>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div class="sidebar__profile">
+            <div class="avatar__wrapper">
+                <img src="asset/Screenshot (1).png" alt="avatar" class="avatar">
+                <div class="online__status"></div>
+            </div>
+            <div class="avatar__name hide">
+                <div class="user-name">John Doe</div>
+                <div class="email">John@gmail.com</div>
+            </div>
+            <button class="profile-menu-button">
+                <!--svg icon-->
+            </button>
+        </div>
+
+    </nav>
+    <div class="main-div">
+
+        <div class="main">
+            <div class="post">
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">New Project</div>
+                        <div class="user_username">@john_doe</div>
+                    </div>
+
+                </div>
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">Projects</div>
+                        <div class="user_username">13</div>
+                    </div>
+
+                </div>
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">Create Discussion</div>
+                        <div class="user_username">@john_doe</div>
+                    </div>
+
+                </div>
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">Discussions</div>
+                        <div class="user_username">2</div>
+                    </div>
+
+                </div>
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">Pinned</div>
+                        <div class="user_username">2</div>
+                    </div>
+
+                </div>
+                <div class="user_profile">
+                    <div class="user_avatar">
+                        <img src="asset/Screenshot (1).png" alt="" class="avatar">
+                    </div>
+                    <div class="user_details">
+                        <div class="user_acc-name">Friends</div>
+                        <div class="user_username">90</div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="trending-div">
+            <div class="trending">
+                <div class="trending-heading">
+                    Trending Issues
+                </div>
+                <div class="trending-contents">
+                    <div class="heading">
+                        <div class="head">Issue1</div>
+                        <div class="name">@john_doe</div>
+                    </div>
+                    <div class="contents">
+                        bra bra bra bra bra bra
+                    </div>
+                </div>
+
+            </div>
+            <div class="trending">
+
+                <div class="trending-contents">
+                    <div class="heading">
+                        <div class="head">Issue1</div>
+                        <div class="name">@john_doe</div>
+                    </div>
+                    <div class="contents">
+                        bra bra bra bra bra bra
+                    </div>
+                </div>
+
+            </div>
+            <div class="trending">
+
+                <div class="trending-contents">
+                    <div class="heading">
+                        <div class="head">Issue1</div>
+                        <div class="name">@john_doe</div>
+                    </div>
+                    <div class="contents">
+                        bra bra bra bra bra bra
+                    </div>
+                </div>
+
+            </div>
+            <div class="trending">
+
+                <div class="trending-contents">
+                    <div class="heading">
+                        <div class="head">Issue1</div>
+                        <div class="name">@john_doe</div>
+                    </div>
+                    <div class="contents">
+                        bra bra bra bra bra bra
+                    </div>
+                </div>
+
+            </div>
+            <div class="trending">
+
+                <div class="trending-contents">
+                    <div class="heading">
+                        <div class="head">Issue1</div>
+                        <div class="name">@john_doe</div>
+                    </div>
+                    <div class="contents">
+                        bra bra bra bra bra bra
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        const expand_btn = document.querySelector(".expand-btn");
+
+        let activeIndex;
+
+        expand_btn.addEventListener("click", () => {
+            document.body.classList.toggle("collapsed");
+        });
+
+
+
+        const searchInput = document.querySelector(".search__wrapper input");
+
+        searchInput.addEventListener("focus", (e) => {
+            document.body.classList.remove("collapsed");
+        });
+    </script>
+</body>
+
+</html>
